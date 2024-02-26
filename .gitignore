@@ -2,3 +2,4 @@ models/
 wav2lip_master/
 store/
 books/
+.env

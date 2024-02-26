@@ -9,6 +9,7 @@ class Args:
     outfile: str = r'E:\chat\outputs\out.mp4'
     frame_path: str = r"E:\chat\frames"
     fps: int = 25
+    k: int = 2
     face_det_batch_size: int = 16
     wav2lip_batch_size: int = 32
     resize_factor: int = 1

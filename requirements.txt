@@ -4,3 +4,4 @@ uvicorn[standard]==0.27.1
 langchain-community==0.0.24
 pydantic==2.6.1
 PyMuPDF==1.23.25
+python-dotenv==1.0.1

@@ -44,7 +44,7 @@ def encode(model_id, device):
     return HuggingFaceEmbeddings(model_name=model_id, model_kwargs = {"device": device})
 
 
-def load_and_embedd(file_path, model_id, device="cpu"):
+def load_and_embedd(file_path, embeddings):
      
     if file_path.endswith('.pdf'):
         documents = load_pdf(file_path)
@@ -52,15 +52,17 @@ def load_and_embedd(file_path, model_id, device="cpu"):
         documents = read_docx(file_path)
      
     splitted_txt = splitter(documents)
-    embeddings = encode(model_id, device)
+    persist_dir = "E:\\casy\\store"
 
     client = chromadb.Client()
     client.get_or_create_collection("casy")
     vectordb = Chroma.from_documents(
         documents=splitted_txt,
         embedding=embeddings,
-        persist_directory="E:\\casy\\store"
+        persist_directory=persist_dir
     )
     vectordb.persist()
 
-    return vectordb, embeddings
+    vector_db = Chroma(persist_directory=persist_dir, embedding_function=embeddings)
+
+    return vector_db
