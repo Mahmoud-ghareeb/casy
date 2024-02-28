@@ -4,3 +4,4 @@ store/
 books/
 .env
 *.pyx
+casy/

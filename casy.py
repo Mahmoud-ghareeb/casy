@@ -1,8 +1,8 @@
-from dll.memory import create_memory, create_context, create_history
-from dll.embedding import load_and_embedd, encode
-from dll.llm import openai_llm
-from dll.audio import get_audio_stream
-from dll.args import Args
+from memory import create_memory, create_context, create_history
+from embedding import load_and_embedd, encode
+from llm import openai_llm
+from audio import get_audio_stream
+from args import Args
 
 from langchain.prompts import PromptTemplate
 
