@@ -5,3 +5,4 @@ books/
 .env
 *.pyx
 casy/
+__pycache__/

@@ -6,8 +6,11 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings.openai import OpenAIEmbeddings
 import chromadb
 from functools import cache
+import shutil
+import os
 
 
 def load_pdf(file_path):
@@ -39,8 +42,12 @@ def splitter(txt):
     return splitter.split_documents(txt)
 
 @cache
-def encode(model_id, device):
-    return HuggingFaceEmbeddings(model_name=model_id, model_kwargs = {"device": device})
+def encode(model_id="", device="", use_open_ai = False):
+    if use_open_ai:
+        opena_api_key = os.getenv('OPENAI_API_KEY')
+        return OpenAIEmbeddings(openai_api_key=opena_api_key, model="text-embedding-3-small")
+    else:
+        return HuggingFaceEmbeddings(model_name=model_id, model_kwargs = {"device": device})
 
 
 def load_and_embedd(file_path, embeddings):
@@ -51,7 +58,10 @@ def load_and_embedd(file_path, embeddings):
         documents = read_docx(file_path)
      
     splitted_txt = splitter(documents)
-    persist_dir = "E:\\casy\\store"
+    persist_dir = "E:\\ro2ya_dev\\casy\\store"
+
+    shutil.rmtree(persist_dir)
+    os.makedirs(persist_dir, exist_ok=True)
 
     client = chromadb.Client()
     client.get_or_create_collection("casy")

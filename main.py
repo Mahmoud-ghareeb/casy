@@ -18,12 +18,12 @@ args = Args()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    embeddings = encode(args.model_id['paraphrase-MiniLM'], device=args.device)
+    embeddings = encode(args.model_id['paraphrase-MiniLM'], device=args.device, use_open_ai=True)
     memory = create_memory(args.k)
     config = yaml.load(open("configs/config.default.yaml", "r"), Loader=yaml.FullLoader)
 
     casy.g_vars['embedding'] = embeddings
-    casy.g_vars['dp'] = load_and_embedd('books/GITSample.docx', casy.g_vars['embedding'])
+    casy.g_vars['dp'] = ''
     casy.g_vars['memory'] = memory
     casy.g_vars['config'] = config
     yield

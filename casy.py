@@ -13,7 +13,7 @@ class Casy:
         
     def get_the_prompt(self, question):
         results = self.g_vars['dp'].max_marginal_relevance_search(question)
-        template = self.g_vars['config']['prompts']['initial_propmt']
+        template = self.g_vars['config']['prompts']['test_propmt']
         context = create_context(results)
         history = create_history(self.g_vars['memory'].chat_memory.messages)
 
@@ -31,7 +31,7 @@ class Casy:
     
     def stream_text(self, question):
         prompt = self.get_the_prompt(question)
-
+        print(prompt)
         return openai_llm(prompt)
     
     def stream_audio(self, question):
