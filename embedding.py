@@ -11,6 +11,8 @@ import chromadb
 from functools import cache
 import shutil
 import os
+import json
+from JsonLoader import JsonCourseLoader
 
 
 def load_pdf(file_path):
@@ -23,6 +25,11 @@ def load_pdf(file_path):
 
 def read_docx(file_path):
     loader = UnstructuredWordDocumentLoader(file_path, mode="single", strategy="fast") 
+    return loader.load()
+
+
+def read_json(file_path):
+    loader = JsonCourseLoader(file_path)
     return loader.load()
 
 
@@ -50,14 +57,17 @@ def encode(model_id="", device="", use_open_ai = False):
         return HuggingFaceEmbeddings(model_name=model_id, model_kwargs = {"device": device})
 
 
-def load_and_embedd(file_path, embeddings):
+def load_and_embedd(file_path, embeddings, is_json=False):
      
     if file_path.endswith('.pdf'):
         documents = load_pdf(file_path)
+        splitted_txt = splitter(documents)
+    elif file_path.endswith('.json'):
+        splitted_txt = read_json(file_path)
     else:
         documents = read_docx(file_path)
-     
-    splitted_txt = splitter(documents)
+        splitted_txt = splitter(documents)
+
     persist_dir = "E:\\ro2ya_dev\\casy\\store"
 
     shutil.rmtree(persist_dir)
