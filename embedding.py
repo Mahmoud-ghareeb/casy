@@ -4,7 +4,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chat_models import ChatOpenAI
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores.chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.embeddings.openai import OpenAIEmbeddings
 import chromadb
@@ -13,6 +13,11 @@ import shutil
 import os
 import json
 from JsonLoader import JsonCourseLoader
+
+import uuid
+
+import chromadb
+from chromadb.config import Settings
 
 
 def load_pdf(file_path):
@@ -57,7 +62,7 @@ def encode(model_id="", device="", use_open_ai = False):
         return HuggingFaceEmbeddings(model_name=model_id, model_kwargs = {"device": device})
 
 
-def load_and_embedd(file_path, embeddings, is_json=False):
+def load_and_embedd(file_path, embeddings, name, is_json=False):
      
     if file_path.endswith('.pdf'):
         documents = load_pdf(file_path)
@@ -68,20 +73,23 @@ def load_and_embedd(file_path, embeddings, is_json=False):
         documents = read_docx(file_path)
         splitted_txt = splitter(documents)
 
-    persist_dir = "E:\\ro2ya_dev\\casy\\store"
+    headers = {
+        'X-Chroma-Token': 'zed@12345678'
+    }
 
-    shutil.rmtree(persist_dir)
-    os.makedirs(persist_dir, exist_ok=True)
+    client = chromadb.HttpClient(host="127.0.0.1", port=8000, headers=headers)
 
-    client = chromadb.Client()
-    client.get_or_create_collection("casy")
-    vectordb = Chroma.from_documents(
-        documents=splitted_txt,
-        embedding=embeddings,
-        persist_directory=persist_dir
-    )
-    vectordb.persist()
-
-    vector_db = Chroma(persist_directory=persist_dir, embedding_function=embeddings)
+    try:
+        client.get_collection(name=name)
+        print('allready exist')
+        vector_db = Chroma(client=client, collection_name=name, embedding_function=embeddings)
+    except:
+        client.get_or_create_collection(name=name)
+        vector_db = Chroma.from_documents(
+                        documents=splitted_txt,
+                        embedding=embeddings,
+                        client=client,
+                        collection_name=name
+                    )
 
     return vector_db

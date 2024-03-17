@@ -12,7 +12,7 @@ class Casy:
         self.g_vars = {}
         
     def get_the_prompt(self, question):
-        results = self.g_vars['dp'].max_marginal_relevance_search(question)
+        results = self.g_vars['dp'].max_marginal_relevance_search(question, k=1)
         template = self.g_vars['config']['prompts']['test_propmt']
         context = create_context(results)
         history = create_history(self.g_vars['memory'].chat_memory.messages)

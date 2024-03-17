@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 from schema import Message
 import shutil
 import yaml
+import hashlib
 
 casy = Casy()
 args = Args()
@@ -18,9 +19,9 @@ args = Args()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    embeddings = encode(args.model_id['paraphrase-MiniLM'], device=args.device, use_open_ai=True)
+    embeddings = encode(args.model_id['multilingual-e5-base'], device=args.device, use_open_ai=False)
     memory = create_memory(args.k)
-    config = yaml.load(open("configs/config.default.yaml", "r"), Loader=yaml.FullLoader)
+    config = yaml.load(open('configs/config.default.yaml', 'r'), Loader=yaml.FullLoader)
 
     casy.g_vars['embedding'] = embeddings
     casy.g_vars['dp'] = ''
@@ -43,7 +44,11 @@ async def create_upload_file(file: UploadFile = File(...)):
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    casy.g_vars['dp'] = load_and_embedd(file_location, casy.g_vars['embedding'])
+    name = file.filename
+
+    hash = hashlib.sha1(name.encode("UTF-8")).hexdigest()
+
+    casy.g_vars['dp'] = load_and_embedd(file_location, casy.g_vars['embedding'], hash, is_json=True)
 
     return {"filename": file.filename, "location": file_location}
 

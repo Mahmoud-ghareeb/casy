@@ -1,10 +1,9 @@
-"""Loads word documents."""
+"""Loads json documents."""
 import json
 from abc import ABC
 from typing import List
 from urllib.parse import urlparse
 
-import requests
 from langchain_core.documents import Document
 
 from langchain_community.document_loaders.base import BaseLoader
