@@ -6,4 +6,3 @@ books/
 *.pyx
 casy/
 __pycache__/
-courses/

@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 
-def openai_llm(prompt):
+def openai_llm(prompt, ):
     opena_api_key = os.getenv('OPENAI_API_KEY')
     client = OpenAI(api_key=opena_api_key)
 
@@ -21,6 +21,13 @@ def openai_llm(prompt):
             stream=True
         )
 
+    res = ""
+
     for chunk in response:
         txt = chunk.choices[0].delta.content
+        res += txt if txt is not None else ""
+
         yield txt if txt is not None else ""
+        
+    
+
